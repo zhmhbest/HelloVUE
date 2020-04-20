@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>Ajax</title>
+    <link rel="stylesheet" href="static/css/demo.css">
+    <script src="static/js/vue.js"></script>
+</head>
+<body>
+
+
+<h2>AJAX by axios</h2>
+<script src="static/js/axios.js"></script>
+<div id="vue_ajax_axios">
+    <p v-html="html"></p>
+    <button @click="loadHtml1">方法1</button>
+    <button @click="loadHtml2">方法2</button>
+</div>
+<script>
+    new Vue({
+        el: '#vue_ajax_axios',
+        data: {
+            html: '等待请求'
+        },
+        methods: {
+            loadHtml1: function () {
+                var _this = this;
+                axios.get('static/html/ajax_success.html').then(function (res) {
+                    _this.html = res.data
+                    // console.log(value.data);
+                }).catch(function (reason) {
+                    _this.html = reason;
+                });
+            },
+            loadHtml2: function () {
+                var _this = this;
+                axios({
+                    method: 'post',
+                    url: 'static/html/ajax_success.html',
+                    data: {}
+                }).then(function (res) {
+                    _this.html = res.data
+                }).catch(function (reason) {
+                    _this.html = reason;
+                });
+            }
+        }
+    })
+</script>
+
+<!-- ■■■■■■■■ ■■■■■■■■ ■■■■■■■■ ■■■■■■■■-->
+
+<h2>AJAX by resource</h2>
+<script src="static/js/vue-resource.js"></script>
+<div id="vue_ajax2">
+    <p v-html="html"></p>
+    <button @click="loadHtml1">方法1</button>
+    <button @click="loadHtml2">方法2</button>
+</div>
+<script>
+    new Vue({
+        el: '#vue_ajax2',
+        data: {
+            html: '等待请求'
+        },
+        methods: {
+            loadHtml1: function () {
+                var _this = this;
+                this.$http.get('static/html/ajax_success.html').then(function (res) {
+                    _this.html = res.data;
+                }, function (reason) {
+                    _this.html = reason.data;
+                });
+            },
+            loadHtml2: function () {
+                var _this = this;
+                this.$http.post('static/html/ajax_success.html', {
+                    /* data */
+                }, {}).then(function (res) {
+                    _this.html = res.data;
+                }, function (reason) {
+                    _this.html = reason.data;
+                });
+            }
+        }
+    })
+</script>
+
+</body>
+</html>

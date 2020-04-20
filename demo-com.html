@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>组件</title>
+    <link rel="stylesheet" href="static/css/demo.css">
+    <script src="static/js/vue.js"></script>
+</head>
+<body>
+
+<h2>Component</h2>
+<div id="vue_component">
+    <h3>【全局组建】</h3>
+    <div>
+        <com-public-card v-for="(item, index) of list" :key="item.title"
+                         :title="item.title"
+                         :content="item.content"
+                         @event_click="onCardClick(index)"
+        ></com-public-card>
+    </div>
+
+    <h3>【局部组建】</h3>
+    <div>
+        <com-private-card v-for="(item, index) of list" :key="item.title"
+                          :title="item.title"
+                          :content="item.content"
+                          @event_click="onCardClick(index)"
+        ></com-private-card>
+    </div>
+</div>
+<script>
+
+    // 局部组件
+    var com_card = {
+        // input: title content msg event_click
+        props: ['title', 'content', 'msg'],    //组建接受的属性值
+        template: '<div @click="event_div_click"><B>{{title}}</B><p>{{content}}</p></div>',
+        methods: {
+            event_div_click: function () {
+                // 模板Click事件触发 => 触发属性event_click绑定的外部事件
+                this.$emit('event_click');
+            }
+        }
+    };
+
+    // 全局组件
+    Vue.component('com-public-card', com_card);
+
+    // 绑定
+    new Vue({
+        el: "#vue_component",
+        components: { //引入局部组建，全局不需要在此处引入。
+            'com-private-card': com_card //组建标签名称: 组建本地变量名称
+        },
+        data: {
+            list: [
+                {
+                    title: '标题1',
+                    content: '内容1'
+                }, {
+                    title: '标题2',
+                    content: '内容2'
+                }
+            ]
+        },
+        methods: {
+            onCardClick: function (index) {
+                alert(this.list[index].title);
+            }
+        }
+    });
+</script>
+
+<!-- ■■■■■■■■ ■■■■■■■■ ■■■■■■■■ ■■■■■■■■-->
+
+<h2>自定义命令</h2>
+<div id="vue_diy">
+    <p v-diy-public-cmd="msg1"></p>
+    <p v-diy-private-cmd="msg2"></p>
+</div>
+<script>
+    // 创建一个Directive
+    var my_directive = {
+        // 当绑定元素插入到 DOM 中。
+        /**
+         * 被绑定元素插入父节点时调用（父节点存在即可调用，不必存在于 document 中）。
+         * @param el        所绑定的元素Object
+         * @param binding
+         *      binding.name        指令名，不包括 v- 前缀。
+         *      binding.value       指令的绑定值， 例如： v-my-directive="1 + 1", value 的值是 2。
+         *      binding.oldValue    指令绑定的前一个值，仅在 update 和 componentUpdated 钩子中可用。无论值是否改变都可用。
+         *      binding.expression  绑定值的表达式或变量名。 例如 v-my-directive="1 + 1" ， expression 的值是 "1 + 1"。
+         *      binding.arg         传给指令的参数。例如 v-my-directive:foo， arg 的值是 "foo"。
+         * @param vnode     Vue 编译生成的虚拟节点
+         */
+        inserted: function (el, binding, vnode) {
+            // 当前自定义命令设置了元素的innerHTML
+            console.log("inserted");
+            el.innerText = binding.value;
+        },
+        bind: function (el, binding, vnode) {
+            console.log("bind");
+            // 只调用一次，指令第一次绑定到元素时调用，用这个钩子函数可以定义一个在绑定时执行一次的初始化动作。
+        },
+        update: function (el, binding, vnode, oldVnode) {
+            // 被绑定元素所在的模板更新时调用，而不论绑定值是否变化。通过比较更新前后的绑定值，可以忽略不必要的模板更新。
+            console.log("update");
+        },
+        unbind: function (el, binding, vnode) {
+            // 只调用一次， 指令与元素解绑时调用。
+            console.log("unbind");
+        },
+        componentUpdated: function (el, binding, vnode, oldVnode) {
+            //被绑定元素所在模板完成一次更新周期时调用。
+            console.log("componentUpdated");
+        }
+    };
+
+    // 注册到全局
+    Vue.directive('diy-public-cmd', my_directive);
+
+    new Vue({
+        el: "#vue_diy",  // 设置挂载点：绑定ID
+        // 注册到局部
+        directives: {
+            'diy-private-cmd': my_directive
+        },
+        data: {
+            msg1: "全局命令",
+            msg2: "局部命令"
+        },
+
+    });
+</script>
+
+</body>
+</html>
