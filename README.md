@@ -2,6 +2,7 @@
 
 - [Vue](https://cn.vuejs.org/v2/guide/installation.html)
 - [Vuex](https://vuex.vuejs.org/zh/guide)
+- [Vue CLI](https://cli.vuejs.org/zh/config/)
 
 ## Demo
 
